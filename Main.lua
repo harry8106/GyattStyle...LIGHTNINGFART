@@ -3,11 +3,14 @@ local Window = Library.CreateLib("True Heart 360", "Ocean")
 local Stats = game.Players.LocalPlayer.data1
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
+local HRP = player.Character.HumanoidRootPart
+local SelectedTrainer = nil
+local SelectedJob = nil
 local offsetDistance = -1.5
 local playerNames, Headshot, Bodyshot = {}, 0.9, -0.9
 local selectedHitArea, selectedHit = nil, nil
 local Skill1, Skill2, Skill3, Skill4 = "", "", "", "Ultra Instinct!"
-_G.selectedPlayer, _G.SpamAttack, _G.Spam, _G.Follow, _G.KillPlayer = nil, false, false, false, false
+_G.selectedPlayer, _G.SpamAttack, _G.Spam, _G.Follow, _G.KillPlayer, _G.Drug, _G.Food = nil, false, false, false, false, nil, nil
 
 local function UpdatePlayerNames()
     playerNames = {}
@@ -205,8 +208,80 @@ local function Run()
         Combo4Skill()
     end)
 
+    local Tab = Window:NewTab("Teleports")
+    local Section = Tab:NewSection("Style Trainers")
+
+    Section:NewDropdown("Select Trainer", "DropdownInf", {"Hitman", "Peekaboo", "Crouching", "Refined Orthodox", "Long Guard", "Philly Shell"}, function(currentOption)
+        if currentOption == "Hitman" then
+            SelectedTrainer = game:GetService("Workspace")["Monte Hearns"]
+        elseif currentOption == "Peekaboo" then
+            SelectedTrainer = game:GetService("Workspace")["Bobby Johnson"]
+        elseif currentOption == "Crouching" then
+            SelectedTrainer = game:GetService("Workspace")["Boon-Nam Bun"]
+        elseif currentOption == "Refined Orthodox" then
+            SelectedTrainer = game:GetService("Workspace")["Keijima Haruki"]
+        elseif currentOption == "Long Guard" then
+            SelectedTrainer = game:GetService("Workspace")["Van Guren"]
+        elseif currentOption == "Philly Shell" then
+            SelectedTrainer = game:GetService("Workspace")["Obu Nobu"]
+        end
+    end)
+
+    Section:NewButton("Tp To Trainer", "ButtonInfo", function()
+        HRP.CFrame = SelectedTrainer.Torso.CFrame
+    end)
+
+    local Section = Tab:NewSection("Job People")
+
+    Section:NewDropdown("Select Job place", "DropdownInf", {"StockBroker", "Scrapper", "HeavyLifter", "Cashier (WIP)"}, function(currentOption)
+        if currentOption == "StockBroker" then
+            SelectedJob = game:GetService("Workspace")["Hunterlinn"]
+        elseif currentOption == "Scrapper" then
+            SelectedJob = game:GetService("Workspace")["Janitor Jim"]
+        elseif currentOption == "HeavyLifter" then
+            SelectedJob = game:GetService("Workspace")["Boss Man Bobby John"]
+        elseif currentOption == "Cashier (WIP)" then
+            SelectedJob = game:GetService("Workspace")["Tommy"]
+        end
+    end)
+
+    Section:NewButton("Tp To Employer", "ButtonInfo", function()
+        HRP.CFrame = SelectedJob.Torso.CFrame
+    end)
+
+    local Tab = Window:NewTab("Buy Stuff")
+    local Section = Tab:NewSection("Supplements")
+
+    local supplementFolder = game:GetService("Workspace").supplementbuys
+    local DrugNames = {}
+
+    for _, item in pairs(supplementFolder:GetChildren()) do
+        table.insert(DrugNames, item.Name)
+    end
+
+    Section:NewDropdown("Select A Drug", "DropdownInf", DrugNames, function(currentOption)
+        _G.Drug = currentOption
+    end)
+
+    Section:NewButton("Buy Drug", "ButtonInfo", function()
+        game:GetService("Players").LocalPlayer.PlayerGui.BuyTrainingUI.bg.RemoteEvent:FireServer(_G.Drug)
+    end)
+
+    local Section = Tab:NewSection("Food")
+    local FoodNames = {"Chicken", "Cake", "Bloxorade", "Hotdog", "Burger", "Taco"}
+    Section:NewDropdown("Select A Food", "DropdownInf", FoodNames, function(currentOption)
+        _G.Food = currentOption
+    end)
+    Section:NewButton("Buy Food", "ButtonInfo", function()
+        game:GetService("Players").LocalPlayer.PlayerGui.FoodUI.ClothingFrame.RemoteEvent:FireServer(_G.Food)
+    end)
+
     local Tab = Window:NewTab("Misc.")
     local Section = Tab:NewSection("Idk anything else")
+
+    Section:NewButton("Stock Market GUI (ass)", "ButtonInfo", function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/harry8106/STOCKMARKETTH3/main/Main.lua'))()
+    end)
 
     Section:NewButton("Heal injuries", "ButtonInfo", function()
         game:GetService("Players").LocalPlayer.PlayerGui.DoctorUI.Cure.LocalScript.RemoteEvent:FireServer()
