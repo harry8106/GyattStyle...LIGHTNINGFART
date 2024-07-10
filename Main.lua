@@ -249,6 +249,22 @@ local function Run()
         HRP.CFrame = SelectedJob.Torso.CFrame
     end)
 
+    local Section = Tab:NewSection("Locations")
+
+    local LocationsFolder = game:GetService("ReplicatedStorage").LocationsFolder
+    local Locations = {}
+    for _, item in pairs(LocationsFolder:GetChildren()) do
+        table.insert(Locations, item.Name)
+    end
+
+    Section:NewDropdown("Select Location","DropDownInfo", Locations, function(CurrentOption)
+        _G.SelectedLocation = CurrentOption
+    end)
+
+    Section:NewButton("Tp To Location", "ButtonInfo", function()
+        game:GetService("ReplicatedStorage").Location:FireServer(_G.SelectedLocation)
+    end)
+
     local Tab = Window:NewTab("Buy Stuff")
     local Section = Tab:NewSection("Supplements")
 
@@ -354,7 +370,7 @@ local function Run()
         local targetPlayer = Players:GetPlayerFromCharacter(game.Workspace[_G.selectedPlayer])
         if not targetPlayer then return end
             
-        local rootPart = player.Character.HumanoidRootPart
+        local rootPart = player.Character.HumanoidRootPar
         local head = targetPlayer.Character.Head
 
         rootPart.CFrame = CFrame.new(head.Position + head.CFrame.LookVector * offsetDistance)
