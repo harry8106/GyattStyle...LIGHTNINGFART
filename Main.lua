@@ -3,10 +3,12 @@ local Window = Library.CreateLib("True Heart 360", "Ocean")
 local Stats = game.Players.LocalPlayer.data1
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local HRP = player.Character.HumanoidRootPart
+local Character = player.Character or player.CharacterAdded:Wait()
+local humanoidrootpart = player.Character.HumanoidRootPart
 local SelectedTrainer = nil
 local SelectedJob = nil
 local offsetDistance = -1.5
+local TweenService = game:GetService("TweenService")
 local playerNames, Headshot, Bodyshot = {}, 0.9, -0.9
 local selectedHitArea, selectedHit = nil, nil
 local Skill1, Skill2, Skill3, Skill4 = "", "", "", "Ultra Instinct!"
@@ -228,7 +230,7 @@ local function Run()
     end)
 
     Section:NewButton("Tp To Trainer", "ButtonInfo", function()
-        HRP.CFrame = SelectedTrainer.Torso.CFrame
+        humanoidrootpart.CFrame = SelectedTrainer.Torso.CFrame
     end)
 
     local Section = Tab:NewSection("Job People")
@@ -246,7 +248,7 @@ local function Run()
     end)
 
     Section:NewButton("Tp To Employer", "ButtonInfo", function()
-        HRP.CFrame = SelectedJob.Torso.CFrame
+        humanoidrootpart.CFrame = SelectedJob.Torso.CFrame
     end)
 
     local Section = Tab:NewSection("Locations")
@@ -329,13 +331,69 @@ local function Run()
     Section:NewToggle("Made In Heaven!", "ToggleInfo", function(SpamOn)
         if SpamOn then
             _G.Spam = true
-            game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("MADE IN HEAVEN!", "All")
+            game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("UNIVERSE RESET!", "All")
         else
             _G.Spam = false
         end
         while _G.Spam == true do
             game:GetService("ReplicatedStorage").Combat:FireServer("dash", "front")
             task.wait()
+        end
+    end)
+
+    Section:NewToggle("Ruin Map (meh)", "ToggleInfo", function(MapRuinOn)
+        _G.RuinMap = MapRuinOn
+        while _G.RuinMap do
+            game:GetService("ReplicatedStorage").Combat:FireServer("dash", "front")
+            task.wait()
+        end
+    end)
+
+    local minPosition = Vector3.new(31, 135, 124)
+    local maxPosition = Vector3.new(156, 135, 272)
+
+    local tweenInfo = TweenInfo.new(
+        0.01, -- Time (reduced for faster movement)
+        Enum.EasingStyle.Linear, -- EasingStyle
+        Enum.EasingDirection.Out, -- EasingDirection
+        0, -- RepeatCount (0 = no repeat)
+        false, -- Reverses (tween does not reverse back to the start)
+        0 -- DelayTime
+    )
+
+    local function createPointsInCube(minPos, maxPos, step)
+        local points = {}
+        for x = minPos.X, maxPos.X, step do
+            for z = minPos.Z, maxPos.Z, step do
+                table.insert(points, Vector3.new(x, minPos.Y, z))
+            end
+        end
+        return points
+    end
+
+    local function teleportTo(position)
+        local goal = { CFrame = CFrame.new(position) }
+        local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+        tween:Play()
+        tween.Completed:Wait() -- Wait for the tween to complete
+    end
+
+    _G.RuinMap = false
+    spawn(function()
+        while true do
+            if _G.RuinMap then
+                local pointsInCube = createPointsInCube(minPosition, maxPosition, 30) -- Using 40 studs as step for fewer points
+                
+                for _, point in ipairs(pointsInCube) do
+                    if _G.RuinMap then
+                        teleportTo(point)
+                    else
+                        break
+                    end
+                end
+            else
+                wait(1) -- Check again after 1 second if the toggle is off
+            end
         end
     end)
 
