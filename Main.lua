@@ -11,7 +11,7 @@ local offsetDistance = -1.5
 local TweenService = game:GetService("TweenService")
 local playerNames, Headshot, Bodyshot = {}, 0.9, -0.9
 local selectedHitArea, selectedHit = nil, nil
-local Skill1, Skill2, Skill3, Skill4 = "", "", "", "Ultra Instinct!"
+local Skill1, Skill2, Skill3, Skill4 = "", "", "", "Dempsey Roll!"
 _G.selectedPlayer, _G.SpamAttack, _G.Spam, _G.Follow, _G.KillPlayer, _G.Drug, _G.Food = nil, false, false, false, false, nil, nil
 
 local function UpdatePlayerNames()
@@ -152,8 +152,15 @@ local function Run()
         wait(0.4)
         game:GetService("ReplicatedStorage").Combat:FireServer("uppercut", 0, 1000, 0.9)
     end
+    
 
     local function Combo4Skill()
+        game:GetService("ReplicatedStorage").Combat:FireServer("righthook", 0, 1000, 0.9)
+        wait(0.2)
+        game:GetService("ReplicatedStorage").Combat:FireServer("lefthook", 0, 1000, 0.9)
+    end
+
+    local function Combo5Skill()
         for i = 1, 5 do
             game:GetService("ReplicatedStorage").Combat:FireServer("dash", "front")
             task.wait()
@@ -197,17 +204,30 @@ local function Run()
         game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(Skill3, "All")
         Combo3Skill()
     end)
+    
 
-    local Section = Tab:NewSection("Ultra Instinct")
+    local Section = Tab:NewSection("Dempsey Roll fr fr")
 
     Section:NewTextBox("Skill name:", "TextboxInfo", function(Skill4Name)
         Skill4 = Skill4Name
         print(Skill4)
     end)
-
+    
     Section:NewKeybind("Skill4 Keybind", "KeybindInfo", Enum.KeyCode.Four, function()
-        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(Skill4, "All")
-        Combo4Skill()
+            game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(Skill4, "All")
+            Combo4Skill()
+        end)
+
+    local Section = Tab:NewSection("Ultra Instinct")
+
+    Section:NewTextBox("Skill name:", "TextboxInfo", function(Skill5Name)
+        Skill5 = Skill5Name
+        print(Skill5)
+    end)
+
+    Section:NewKeybind("Skill5 Keybind", "KeybindInfo", Enum.KeyCode.Five, function()
+        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(Skill5, "All")
+        Combo5Skill()
     end)
 
     local Tab = Window:NewTab("Teleports")
